@@ -21,7 +21,9 @@ class DriverModelTests(TestCase):
         self.driver = Driver.objects.create_user(
             username="testuser",
             password="testpass123",
-            license_number="ABC12345"
+            license_number="ABC12345",
+            first_name="Test",
+            last_name="Test",
         )
 
     def test_driver_str_method_returns_username_and_full_name(self):
@@ -41,10 +43,12 @@ class CarModelsTests(TestCase):
         self.manufacturer = Manufacturer.objects.create(name="testmanuf")
         self.driver1 = Driver.objects.create_user(
             username="driver1",
+            password="testpass123",
             license_number="ABC12345",
         )
         self.driver2 = Driver.objects.create_user(
             username="driver2",
+            password="testpass123",
             license_number="ABC54321",
         )
         self.car = Car.objects.create(
@@ -52,6 +56,7 @@ class CarModelsTests(TestCase):
             manufacturer=self.manufacturer,
         )
         self.car.drivers.set([self.driver1, self.driver2])
+        self.manufacturer = Manufacturer.objects.create(name="testmanuf", country="testcountry")
 
     def test_car_str_returns_model(self):
         self.assertEqual(str(self.car), "test model")
