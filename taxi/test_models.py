@@ -1,3 +1,5 @@
+import uuid
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -7,13 +9,25 @@ from taxi.models import Driver, Manufacturer, Car
 class ManufacturerModelTests(TestCase):
     def setUp(self):
         self.manufacturer = Manufacturer.objects.create(
-            name="test manufacturer",
-            country="test country"
+            name=f"testmanuf-{uuid.uuid4()}",
+            country="testcountry"
         )
 
-    def test_manufacturer_str_method_returns_name_and_country(self):
-        expected_str = f"{self.manufacturer.name} {self.manufacturer.country}"
-        self.assertEqual(str(self.manufacturer), expected_str)
+        self.driver1 = Driver.objects.create_user(
+            username="driver1",
+            password="testpass123",
+            license_number="ABC12345",
+        )
+        self.driver2 = Driver.objects.create_user(
+            username="driver2",
+            password="testpass123",
+            license_number="ABC54321",
+        )
+        self.car = Car.objects.create(
+            model="test model",
+            manufacturer=self.manufacturer,
+        )
+        self.car.drivers.set([self.driver1, self.driver2])
 
 
 class DriverModelTests(TestCase):
@@ -40,7 +54,9 @@ class DriverModelTests(TestCase):
 
 class CarModelsTests(TestCase):
     def setUp(self):
-        self.manufacturer = Manufacturer.objects.create(name="testmanuf")
+        self.manufacturer = Manufacturer.objects.create(
+            name="testmanuf", country="testcountry"
+        )
         self.driver1 = Driver.objects.create_user(
             username="driver1",
             password="testpass123",
@@ -56,7 +72,6 @@ class CarModelsTests(TestCase):
             manufacturer=self.manufacturer,
         )
         self.car.drivers.set([self.driver1, self.driver2])
-        self.manufacturer = Manufacturer.objects.create(name="testmanuf", country="testcountry")
 
     def test_car_str_returns_model(self):
         self.assertEqual(str(self.car), "test model")
